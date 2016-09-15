@@ -17,3 +17,6 @@ def deploy():
 def local():
     build()
     deploy()
+
+def test():
+    run("echo "+env.host)
