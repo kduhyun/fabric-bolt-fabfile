@@ -27,7 +27,7 @@ def setup():
 
     run("echo 'step 2. install jdk 1.8'")
     isJava8=run("java -version 2>&1 | grep '1.8.0' | wc -l")
-    if isJava8 == 0:
+    if int(isJava8) == 0:
         run('cd /svc && wget --no-cookies --no-check-certificate --header "Cookie: gpw_e24=http%3A%2F%2Fwww.oracle.com%2F; oraclelicense=accept-securebackup-cookie" "http://download.oracle.com/otn-pub/java/jdk/8u101-b13/jdk-8u101-linux-x64.tar.gz"')
         run("cd /svc && tar xzf jdk-8u101-linux-x64.tar.gz")
         run("ln -s /svc/jdk1.8.0_101 /svc/java")
@@ -37,8 +37,7 @@ def setup():
     
     run("echo 'step 3. increase file limits'")
     isNofileAppended=run("cat /etc/security/limits.conf | grep 'nofile 100000' | wc -l")
-    print isNofileAppended
-    if isNofileAppended == 0 or isNofileAppended == "0":
+    if int(isNofileAppended) == 0:
         sudo("sed -i '$ a\* - memlock unlimited\\n* - nofile 100000\\n* - nproc 32768\\n* - as unlimited' /etc/security/limits.conf")
 
     run("echo 'step 4. set up supervisord.conf'")
@@ -46,7 +45,7 @@ def setup():
     
     run("echo 'step 5. set up swap memories'")
     isSwapOn=run("swapon -s | wc -l")
-    if isSwapOn == 0:
+    if int(isSwapOn) == 0:
         sudo("dd if=/dev/zero of=/swapfile bs=1M count=1024")
         sudo("chown root:root /swapfile")
         sudo("chmod 600 /swapfile")
@@ -57,5 +56,5 @@ def setup():
     
     run("echo 'step 6. add an public key for owltree.pem'")
     isKeyAppended=run("cat ~/.ssh/authorized_keys | grep owltree | wc -l")
-    if isKeyAppended == 0:
+    if int(isKeyAppended) == 0:
         run("echo 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCaQu9A7OSGw8l1uEHx3MN6xHRmNSb5vZDZCadu0GlRoQig8V2bqCFRuIKWv7VXwFDq9oywtPQjPMh1Je2z7uIPHEtGTl1N6dS5u6d9thfxhbBz4yWLtLzT31V8p5Y0Rq8WgiVQV0QAfCFpSCaKTPavXoiKbfSdfPCpCF7lNgLzrQnL7LcvPpHxtjzTBgYBrITDlRQCdCktqXvzi6hGq0++SfvF2QpJ4r9MtqxP1CDbks5Ir8cHRZPeXb+F088uaygaVXpe3s7b5/8NHh8IjyV2fFZpiiDj49VvTuMoxv2iLhC1j3/Wd9pUEaTUVk4buSlf7H69yOYu9c/MGRX5KIX1 owltree' >> ~/.ssh/authorized_keys")
