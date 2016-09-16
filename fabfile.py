@@ -43,7 +43,7 @@ def setup():
     run("echo 'step 4. set up supervisord.conf'")
     run("cd /svc && wget https://raw.githubusercontent.com/kduhyun/fabric-bolt-fabfile/master/setup.supervisord.sh && sh /svc/setup.supervisord.sh")
     
-    run("echo 'step 5. set up swap memories")
+    run("echo 'step 5. set up swap memories'")
     isSwapOn=run("swapon -s | wc -l")
     if isSwapOn == 0:
         sudo("dd if=/dev/zero of=/swapfile bs=1M count=1024")
@@ -54,7 +54,7 @@ def setup():
         sudo("swapon -a")
         sudo("sed -i '$ a\swap        /swapfile   swap   swap   defaults  0  0' /etc/fstab")
     
-    run("echo 'step 6. add an public key for owltree.pem")
+    run("echo 'step 6. add an public key for owltree.pem'")
     isKeyAppended=run("cat ~/.ssh/authorized_keys | grep owltree | wc -l")
     if isKeyAppended == 0:
         run("echo 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCaQu9A7OSGw8l1uEHx3MN6xHRmNSb5vZDZCadu0GlRoQig8V2bqCFRuIKWv7VXwFDq9oywtPQjPMh1Je2z7uIPHEtGTl1N6dS5u6d9thfxhbBz4yWLtLzT31V8p5Y0Rq8WgiVQV0QAfCFpSCaKTPavXoiKbfSdfPCpCF7lNgLzrQnL7LcvPpHxtjzTBgYBrITDlRQCdCktqXvzi6hGq0++SfvF2QpJ4r9MtqxP1CDbks5Ir8cHRZPeXb+F088uaygaVXpe3s7b5/8NHh8IjyV2fFZpiiDj49VvTuMoxv2iLhC1j3/Wd9pUEaTUVk4buSlf7H69yOYu9c/MGRX5KIX1 owltree' >> ~/.ssh/authorized_keys")
