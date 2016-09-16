@@ -16,7 +16,6 @@ def deploy():
         sudo("ps aux | grep OwlTree-1.0.0.jar | grep -v grep | awk '{print $2}' | xargs kill && sleep 5")
 
 @parallel(pool_size=5)
-@task
 def deployParallel():
     run("echo "+env.host)
     with settings(warn_only=True):
