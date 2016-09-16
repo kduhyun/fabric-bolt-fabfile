@@ -62,6 +62,6 @@ def setup():
 
     run("echo 'set up s3cmd'")
     isS3cmdOk=run("ls ~/.s3cfg | wc -l")
-    if int(isS3cmdOk) == 0:
+    if isS3cmdOk != "1":
        sudo("pip install s3cmd")
        put('/home/ec2-user/.s3cfg', '/home/ec2-user/.s3cfg')
