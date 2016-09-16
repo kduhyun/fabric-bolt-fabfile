@@ -2,6 +2,7 @@ from fabric.api import *
 
 env.user='ec2-user'
 env.key_filename=['/home/ec2-user/.ssh/owltree.pem', '/home/ec2-user/.ssh/choco.pem']
+env.warn_only=True
 
 def build():
     run("cd /svc/git/owltreeserver && git pull")
@@ -60,7 +61,7 @@ def setup():
         run("echo 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCaQu9A7OSGw8l1uEHx3MN6xHRmNSb5vZDZCadu0GlRoQig8V2bqCFRuIKWv7VXwFDq9oywtPQjPMh1Je2z7uIPHEtGTl1N6dS5u6d9thfxhbBz4yWLtLzT31V8p5Y0Rq8WgiVQV0QAfCFpSCaKTPavXoiKbfSdfPCpCF7lNgLzrQnL7LcvPpHxtjzTBgYBrITDlRQCdCktqXvzi6hGq0++SfvF2QpJ4r9MtqxP1CDbks5Ir8cHRZPeXb+F088uaygaVXpe3s7b5/8NHh8IjyV2fFZpiiDj49VvTuMoxv2iLhC1j3/Wd9pUEaTUVk4buSlf7H69yOYu9c/MGRX5KIX1 owltree' >> ~/.ssh/authorized_keys")
 
     run("echo 'set up s3cmd'")
-    isS3cmdOk=run("cat ~/.ssh/.s3cfg | grep owltree | wc -l")
+    isS3cmdOk=run("ls ~/.s3cfg | wc -l")
     if int(isS3cmdOk) == 0:
        sudo("pip install s3cmd")
        put('/home/ec2-user/.s3cfg', '/home/ec2-user/.s3cfg')
