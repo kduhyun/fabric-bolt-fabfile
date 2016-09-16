@@ -33,7 +33,7 @@ def test():
 def setup():
     run("echo 'step 1. make default directories.'")
     sudo("mkdir -p /svc/owltree && chown ec2-user.ec2-user /svc && chown ec2-user.ec2-user /svc/*")
-    put("/svc/owltree/*.y*ml","/svc/owltree")
+    put('/svc/owltree/*.y*ml','/svc/owltree')
 
     run("echo 'step 2. install jdk 1.8'")
     isJava8=run("java -version 2>&1 | grep '1.8.0' | wc -l")
