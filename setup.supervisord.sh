@@ -13,6 +13,6 @@ PROFILES=${PROFILES}${server_id}
 
 echo $PROFILES
 
-mkdir /svc/
+mkdir -p /svc/
 
 curl https://raw.githubusercontent.com/kduhyun/fabric-bolt-fabfile/master/supervisord.conf.template | sed s/_PROFILES_/${PROFILES}/g > /svc/supervisord.conf
