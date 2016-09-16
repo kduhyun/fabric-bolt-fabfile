@@ -26,7 +26,7 @@ def setup():
     sudo("mkdir -p /svc/owltree && chown ec2-user.ec2-user /svc && chown ec2-user.ec2-user /svc/*")
 
     run("echo 'step 2. install jdk 1.8'")
-    isJava8=run("java -version 2>&1 | grep "1.8.0" | wc -l")
+    isJava8=run("java -version 2>&1 | grep '1.8.0' | wc -l")
     if isJava8 == 0:
         run('cd /svc && wget --no-cookies --no-check-certificate --header "Cookie: gpw_e24=http%3A%2F%2Fwww.oracle.com%2F; oraclelicense=accept-securebackup-cookie" "http://download.oracle.com/otn-pub/java/jdk/8u101-b13/jdk-8u101-linux-x64.tar.gz"')
         run("cd /svc && tar xzf jdk-8u101-linux-x64.tar.gz")
