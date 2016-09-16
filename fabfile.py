@@ -37,7 +37,8 @@ def setup():
     
     run("echo 'step 3. increase file limits'")
     isNofileAppended=run("cat /etc/security/limits.conf | grep 'nofile 100000' | wc -l")
-    if isNofileAppended == 0:
+    print isNofileAppended
+    if isNofileAppended == 0 or isNofileAppended == "0":
         sudo("sed -i '$ a\* - memlock unlimited\\n* - nofile 100000\\n* - nproc 32768\\n* - as unlimited' /etc/security/limits.conf")
 
     run("echo 'step 4. set up supervisord.conf'")
