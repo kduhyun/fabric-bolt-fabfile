@@ -15,7 +15,8 @@ def deploy():
         run("s3cmd get --force s3://owltree/OwlTree-1.0.0.zip /svc/owltree/ && cd /svc/owltree/ && unzip -o ./OwlTree-1.0.0.zip")
         sudo("ps aux | grep OwlTree-1.0.0.jar | grep -v grep | awk '{print $2}' | xargs kill && sleep 5")
 
-@parallel
+@parallel(pool_size=5)
+@task
 def deployParallel():
     run("echo "+env.host)
     with settings(warn_only=True):
@@ -32,6 +33,7 @@ def test():
 def setup():
     run("echo 'step 1. make default directories.'")
     sudo("mkdir -p /svc/owltree && chown ec2-user.ec2-user /svc && chown ec2-user.ec2-user /svc/*")
+    put("/svc/owltree/*.y*ml","/svc/owltree")
 
     run("echo 'step 2. install jdk 1.8'")
     isJava8=run("java -version 2>&1 | grep '1.8.0' | wc -l")
@@ -49,7 +51,13 @@ def setup():
         sudo("sed -i '$ a\* - memlock unlimited\\n* - nofile 100000\\n* - nproc 32768\\n* - as unlimited' /etc/security/limits.conf")
 
     run("echo 'step 4. set up supervisord.conf'")
-    run("cd /svc && wget https://raw.githubusercontent.com/kduhyun/fabric-bolt-fabfile/master/setup.supervisord.sh && sh /svc/setup.supervisord.sh")
+    isSupervisorOk=run("which supervisorctl | wc -l")
+    if isSupervisorOk != "1":
+        run("cd /svc && rm -f /svc/setup.supervisord.sh* && wget https://raw.githubusercontent.com/kduhyun/fabric-bolt-fabfile/master/setup.supervisord.sh && sh /svc/setup.supervisord.sh")
+        sudo("ln -s /svc/supervisord.conf /etc/supervisord.conf")
+        sudo("pip install supervisor")
+        sudo("cd /etc/init.d && wget https://raw.githubusercontent.com/kduhyun/fabric-bolt-fabfile/master/supervisor && chmod 755 /etc/init.d/supervisor")
+        sudo("service supervisor start")
     
     run("echo 'step 5. set up swap memories'")
     isSwapOn=run("swapon -s | wc -l")
@@ -67,8 +75,13 @@ def setup():
     if int(isKeyAppended) == 0:
         run("echo 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCaQu9A7OSGw8l1uEHx3MN6xHRmNSb5vZDZCadu0GlRoQig8V2bqCFRuIKWv7VXwFDq9oywtPQjPMh1Je2z7uIPHEtGTl1N6dS5u6d9thfxhbBz4yWLtLzT31V8p5Y0Rq8WgiVQV0QAfCFpSCaKTPavXoiKbfSdfPCpCF7lNgLzrQnL7LcvPpHxtjzTBgYBrITDlRQCdCktqXvzi6hGq0++SfvF2QpJ4r9MtqxP1CDbks5Ir8cHRZPeXb+F088uaygaVXpe3s7b5/8NHh8IjyV2fFZpiiDj49VvTuMoxv2iLhC1j3/Wd9pUEaTUVk4buSlf7H69yOYu9c/MGRX5KIX1 owltree' >> ~/.ssh/authorized_keys")
 
-    run("echo 'set up s3cmd'")
+    run("echo 'step 7. set up s3cmd'")
     isS3cmdOk=run("ls ~/.s3cfg | wc -l")
     if isS3cmdOk != "1":
        sudo("pip install s3cmd")
        put('/home/ec2-user/.s3cfg', '/home/ec2-user/.s3cfg')
+
+    run("echo 'step 8. set up /etc/hosts'")
+    isHostsOk=sudo("cat /etc/hosts | grep owltree | wc -l")
+    if int(isHostsOk) == 0:
+        sudo("echo '172.30.0.10 infra infra.owltree.us' >> /etc/hosts")
