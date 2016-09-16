@@ -46,7 +46,13 @@ def setup():
     run("echo 'step 5. set up swap memories")
     isSwapOn=run("swapon -s | wc -l")
     if isSwapOn == 0:
-        sudo("dd if=/dev/zero of=/swapfile bs=1M count=1024 && chown root:root /swapfile && chmod 600 /swapfile && mkswap /swapfile && swapon /swapfile && swapon -a && sed -i '$ a\swap        /swapfile   swap   swap   defaults  0  0' /etc/fstab")
+        sudo("dd if=/dev/zero of=/swapfile bs=1M count=1024")
+        sudo("chown root:root /swapfile")
+        sudo("chmod 600 /swapfile")
+        sudo("mkswap /swapfile")
+        sudo("swapon /swapfile")
+        sudo("swapon -a")
+        sudo("sed -i '$ a\swap        /swapfile   swap   swap   defaults  0  0' /etc/fstab")
     
     run("echo 'step 6. add an public key for owltree.pem")
     isKeyAppended=run("cat ~/.ssh/authorized_keys | grep owltree | wc -l")
