@@ -1,7 +1,7 @@
 from fabric.api import *
 
 env.user='ec2-user'
-env.key_filename=['/home/ec2-user/.ssh/owltree.pem']
+env.key_filename=['/home/ec2-user/.ssh/owltree.pem', '/home/ec2-user/.ssh/choco.pem']
 
 def build():
     run("cd /svc/git/owltreeserver && git pull")
