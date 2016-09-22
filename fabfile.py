@@ -15,7 +15,8 @@ def deploy():
     with settings(warn_only=True):
         run("s3cmd get --force s3://owltree/OwlTree-1.0.0.zip /svc/owltree/ && cd /svc/owltree/ && unzip -o ./OwlTree-1.0.0.zip")
         sudo("ps aux | grep OwlTree-1.0.0.jar | grep -v grep | awk '{print $2}' | xargs kill && sleep 5")
-        run("echo 'lb_in' && sleep 30 && curl 'http://localhost:8080/util/status/on'")
+
+    run("echo 'lb_in' && sleep 60 && curl 'http://localhost:8080/util/status/on'")
 
 @parallel(pool_size=5)
 def deployParallel():
@@ -26,7 +27,7 @@ def deployParallel():
     with settings(warn_only=True):
         run("s3cmd get --force s3://owltree/OwlTree-1.0.0.zip /svc/owltree/ && cd /svc/owltree/ && unzip -o ./OwlTree-1.0.0.zip")
         sudo("ps aux | grep OwlTree-1.0.0.jar | grep -v grep | awk '{print $2}' | xargs kill && sleep 5")
-        run("echo 'lb_in' && sleep 30 && curl 'http://localhost:8080/util/status/on'")
+        run("echo 'lb_in' && sleep 60 && curl 'http://localhost:8080/util/status/on'")
         
 def local():
     build()
