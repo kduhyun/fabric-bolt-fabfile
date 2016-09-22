@@ -19,7 +19,7 @@ def deploy():
 
 @parallel(pool_size=5)
 def deployParallel():
-    run("echo "+env.host)
+    run("echo '"+env.host +"' && date")
     
     run("echo 'lb_out' && curl 'http://localhost:8080/util/status/off' && sleep 30")
     
