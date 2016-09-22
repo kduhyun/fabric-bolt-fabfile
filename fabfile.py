@@ -10,22 +10,29 @@ def build():
 
 def deploy():
     run("echo "+env.host)
-    run("echo lb_out")
+    ("echo 'lb_out' && curl 'http://localhost:8080/util/status/off' && sleep 30")
+    
     with settings(warn_only=True):
         run("s3cmd get --force s3://owltree/OwlTree-1.0.0.zip /svc/owltree/ && cd /svc/owltree/ && unzip -o ./OwlTree-1.0.0.zip")
         sudo("ps aux | grep OwlTree-1.0.0.jar | grep -v grep | awk '{print $2}' | xargs kill && sleep 5")
+        run("echo 'lb_in' && sleep 30 && curl 'http://localhost:8080/util/status/on'")
 
 @parallel(pool_size=5)
 def deployParallel():
     run("echo "+env.host)
+    
+    run("echo 'lb_out' && curl 'http://localhost:8080/util/status/off' && sleep 30")
+    
     with settings(warn_only=True):
         run("s3cmd get --force s3://owltree/OwlTree-1.0.0.zip /svc/owltree/ && cd /svc/owltree/ && unzip -o ./OwlTree-1.0.0.zip")
         sudo("ps aux | grep OwlTree-1.0.0.jar | grep -v grep | awk '{print $2}' | xargs kill && sleep 5")
+        run("echo 'lb_in' && sleep 30 && curl 'http://localhost:8080/util/status/on'")
         
 def local():
     build()
     deploy()
 
+@parallel(pool_size=2)
 def test():
     run("echo "+env.host)
 
