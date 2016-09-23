@@ -66,16 +66,22 @@ def setup():
         sudo("cd /etc/init.d && wget https://raw.githubusercontent.com/kduhyun/fabric-bolt-fabfile/master/supervisor && chmod 755 /etc/init.d/supervisor")
         sudo("service supervisor start")
     
-    run("echo 'step 5. set up swap memories'")
-    isSwapOn=run("swapon -s | wc -l")
+    run("echo 'step 5. set up swap off memories'")
+    isSwapOn=run("cat /etc/sysctl.conf | grep swappiness | wc -l")
     if int(isSwapOn) == 0:
-        sudo("dd if=/dev/zero of=/swapfile bs=1M count=1024")
-        sudo("chown root:root /swapfile")
-        sudo("chmod 600 /swapfile")
-        sudo("mkswap /swapfile")
-        sudo("swapon /swapfile")
-        sudo("swapon -a")
-        sudo("sed -i '$ a\swap        /swapfile   swap   swap   defaults  0  0' /etc/fstab")
+        sudo("echo 'vm.swappiness = 0' >> /etc/sysctl.conf")
+    
+    #run("echo 'step 5. set up swap off memories'")
+    #isSwapOn=run("swapon -s | wc -l")
+    #if int(isSwapOn) == 0:
+    #    sudo("dd if=/dev/zero of=/swapfile bs=1M count=1024")
+    #    sudo("chown root:root /swapfile")
+    #    sudo("chmod 600 /swapfile")
+    #    sudo("mkswap /swapfile")
+    #    sudo("swapon /swapfile")
+    #    sudo("swapon -a")
+    #    sudo("sed -i '$ a\swap        /swapfile   swap   swap   defaults  0  0' /etc/fstab")
+    #    sudo("vm.swappiness = 0 >> /etc/sysctl.conf")
     
     run("echo 'step 6. add an public key for owltree.pem'")
     isKeyAppended=run("cat ~/.ssh/authorized_keys | grep owltree | wc -l")
