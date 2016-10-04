@@ -1,7 +1,7 @@
 source /home/ec2-user/.bash_profile
 
 rm -f /etc/haproxy/haproxy.cfg.template
-wget --no-cache https://raw.githubusercontent.com/kduhyun/fabric-bolt-fabfile/master/master/haproxy.cfg.template -O /etc/haproxy/haproxy.cfg.template
+wget --no-cache --no-check-certificate https://raw.githubusercontent.com/kduhyun/fabric-bolt-fabfile/master/master/haproxy.cfg.template -O /etc/haproxy/haproxy.cfg.template
 
 touch /etc/haproxy/haproxy.cfg
 mv -f /etc/haproxy/haproxy.cfg /etc/haproxy/haproxy.cfg.old
