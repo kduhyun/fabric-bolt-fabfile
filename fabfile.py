@@ -105,5 +105,6 @@ def setup():
         run("""echo "alias log='sudo supervisorctl tail -f owl'" >> /home/ec2-user/.bash_profile""")
         sudo("""echo "alias log='supervisorctl tail -f owl'" >> /root/.bash_profile""")
     
+    run("echo 'step 10. deploying Jar.'")
     processDeploying()
     sudo("service supervisor restart")
