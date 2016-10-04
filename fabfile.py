@@ -6,7 +6,7 @@ env.warn_only=True
 
 def build():
     run("cd /svc/git/owltreeserver && git pull")
-    run("cd /svc/git/owltreeserver && git pull && git checkout develop && ./mvnw install && rm -f /svc/git/owltreeserver/target/OwlTree-1.0.0.zip && zip -9 -j /svc/git/owltreeserver/target/OwlTree-1.0.0.zip /svc/git/owltreeserver/target/OwlTree-1.0.0.jar && s3cmd put --force /svc/git/owltreeserver/target/OwlTree-1.0.0.zip s3://owltree/")
+    run("cd /svc/git/owltreeserver && git checkout develop && git pull && ./mvnw install && rm -f /svc/git/owltreeserver/target/OwlTree-1.0.0.zip && zip -9 -j /svc/git/owltreeserver/target/OwlTree-1.0.0.zip /svc/git/owltreeserver/target/OwlTree-1.0.0.jar && s3cmd put --force /svc/git/owltreeserver/target/OwlTree-1.0.0.zip s3://owltree/")
     sudo("rm -f /svc/shell/setup.haproxy.sh")
     sudo("wget --no-cache --no-check-certificate https://raw.githubusercontent.com/kduhyun/fabric-bolt-fabfile/master/master/setup.haproxy.sh -O /svc/shell/setup.haproxy.sh")
     sudo("sh /svc/shell/setup.haproxy.sh")
