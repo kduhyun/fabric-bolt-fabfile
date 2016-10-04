@@ -1,3 +1,4 @@
+rm -f /etc/haproxy/haproxy.cfg.template
 wget https://raw.githubusercontent.com/kduhyun/fabric-bolt-fabfile/master/master/haproxy.cfg.template -O /etc/haproxy/haproxy.cfg.template
 
 touch /etc/haproxy/haproxy.cfg
