@@ -8,14 +8,15 @@ def build():
     run("cd /svc/git/owltreeserver && git pull")
     run("cd /svc/git/owltreeserver && git pull && git checkout develop && ./mvnw install && rm -f /svc/git/owltreeserver/target/OwlTree-1.0.0.zip && zip -9 -j /svc/git/owltreeserver/target/OwlTree-1.0.0.zip /svc/git/owltreeserver/target/OwlTree-1.0.0.jar && s3cmd put --force /svc/git/owltreeserver/target/OwlTree-1.0.0.zip s3://owltree/")
 
-def deploy():
-    run("echo "+env.host)
-    ("echo 'lb_out' && curl 'http://localhost:8080/util/status/off' && sleep 30")
-    
+def processDeploying():    
     with settings(warn_only=True):
         run("s3cmd get --force s3://owltree/OwlTree-1.0.0.zip /svc/owltree/ && cd /svc/owltree/ && unzip -o ./OwlTree-1.0.0.zip")
         sudo("ps aux | grep OwlTree-1.0.0.jar | grep -v grep | awk '{print $2}' | xargs kill && sleep 5")
-
+    
+def deploy():
+    run("echo "+env.host)
+    ("echo 'lb_out' && curl 'http://localhost:8080/util/status/off' && sleep 30")
+    processDeploying()
     run("echo 'lb_in' && sleep 60 && curl 'http://localhost:8080/util/status/on'")
 
 @parallel(pool_size=5)
@@ -23,11 +24,8 @@ def deployParallel():
     run("echo '"+env.host +"' && date")
     
     run("echo 'lb_out' && curl 'http://localhost:8080/util/status/off' && sleep 30")
-    
-    with settings(warn_only=True):
-        run("s3cmd get --force s3://owltree/OwlTree-1.0.0.zip /svc/owltree/ && cd /svc/owltree/ && unzip -o ./OwlTree-1.0.0.zip")
-        sudo("ps aux | grep OwlTree-1.0.0.jar | grep -v grep | awk '{print $2}' | xargs kill && sleep 5")
-        run("echo 'lb_in' && sleep 60 && curl 'http://localhost:8080/util/status/on'")
+    processDeploying()
+    run("echo 'lb_in' && sleep 60 && curl 'http://localhost:8080/util/status/on'")
         
 def local():
     build()
@@ -64,6 +62,7 @@ def setup():
         sudo("ln -s /svc/supervisord.conf /etc/supervisord.conf")
         sudo("pip install supervisor")
         sudo("cd /etc/init.d && wget https://raw.githubusercontent.com/kduhyun/fabric-bolt-fabfile/master/supervisor && chmod 755 /etc/init.d/supervisor")
+        sudo("ln -s /usr/local/bin/supervisorctl /usr/bin/")
         sudo("service supervisor start")
     
     run("echo 'step 5. set up swap off memories'")
@@ -98,3 +97,13 @@ def setup():
     isHostsOk=sudo("cat /etc/hosts | grep owltree | wc -l")
     if int(isHostsOk) == 0:
         sudo("echo '172.30.0.10 infra infra.owltree.us' >> /etc/hosts")
+
+        
+    run("echo 'step 9. set up aliases.'")
+    isAliasOk=sudo("cat /home/ec2-user/.bash_profile | grep alias | wc -l")
+    if int(isAliasOk) == 0:
+        run("""echo "alias log='sudo supervisorctl tail -f owl'" >> /home/ec2-user/.bash_profile""")
+        sudo("""echo "alias log='supervisorctl tail -f owl'" >> /root/.bash_profile""")
+    
+    processDeploying()
+    sudo("service supervisor restart")
