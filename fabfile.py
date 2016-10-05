@@ -99,7 +99,7 @@ def setup():
     run("echo 'step 8. set up /etc/hosts'")
     isHostsOk=sudo("cat /etc/hosts | grep owltree | wc -l")
     if int(isHostsOk) == 0:
-        sudo("echo '172.30.0.10 infra infra.owltree.us' >> /etc/hosts")
+        sudo("echo '172.30.0.235 infra infra.owltree.us' >> /etc/hosts")
 
         
     run("echo 'step 9. set up aliases.'")
