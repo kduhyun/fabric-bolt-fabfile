@@ -1,5 +1,5 @@
 [program:owl]
-command=/svc/java/bin/java -javaagent:/svc/owltree/OwlTree-1.0.0.jar -Dspring.profiles.active="_PROFILES_" -jar /svc/owltree/OwlTree-1.0.0.jar
+command=/svc/java/bin/java -javaagent:/svc/owltree/OwlTree-1.0.0.jar -Dfile.encoding=UTF8 -Dspring.profiles.active="_PROFILES_" -jar /svc/owltree/OwlTree-1.0.0.jar
 autorestart=true
 directory=/svc/owltree
 
