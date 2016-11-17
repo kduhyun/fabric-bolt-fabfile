@@ -34,6 +34,15 @@ def local():
     build()
     deploy()
 
+@parallel(pool_size=5)
+def deployMonitoring():
+    run("echo '"+env.host +"' && date")
+    
+    sudo("easy_install monitoring")
+    run("mkdir -p /svc/monitor")
+    run("wget --no-cache --no-check-certificate https://raw.githubusercontent.com/kduhyun/fabric-bolt-fabfile/master/master/monitor.apps.py -O /svc/monitor/monitor.apps.py")
+    sudo("ps aux | grep monitor.appserver.py | grep -v grep | awk '{print $2}' | xargs kill && sleep 5")
+    
 @parallel(pool_size=2)
 def test():
     run("echo "+env.host)
