@@ -36,9 +36,7 @@ def local():
 
 @parallel(pool_size=5)
 def deployMonitoring():
-    run("echo '"+env.host +"' && date")
-    
-    sudo("easy_install monitoring")
+    run("echo '"+env.host +"' && date")    
     run("mkdir -p /svc/monitor")
     run("wget --no-cache --no-check-certificate https://raw.githubusercontent.com/kduhyun/fabric-bolt-fabfile/master/master/monitor.apps.py -O /svc/monitor/monitor.apps.py")
     sudo("ps aux | grep monitor.appserver.py | grep -v grep | awk '{print $2}' | xargs kill && sleep 5")
@@ -51,7 +49,8 @@ def setup():
     run("echo 'step 1. make default directories.'")
     sudo("mkdir -p /svc/owltree && chown ec2-user.ec2-user /svc && chown ec2-user.ec2-user /svc/*")
     put('/svc/owltree/*.y*ml','/svc/owltree')
-
+    sudo("easy_install monitoring")
+    
     run("echo 'step 2. install jdk 1.8'")
     isJava8=run("java -version 2>&1 | grep '1.8.0' | wc -l")
     if int(isJava8) == 0:
