@@ -39,7 +39,7 @@ def deployMonitoring():
     run("echo '"+env.host +"' && date")    
     run("mkdir -p /svc/monitor")
     run("wget --no-cache --no-check-certificate https://raw.githubusercontent.com/kduhyun/fabric-bolt-fabfile/master/monitor.apps.py -O /svc/monitor/monitor.apps.py")
-    sudo("ps aux | grep monitor.appserver.py | grep -v grep | awk '{print $2}' | xargs kill && sleep 5")
+    sudo("ps aux | grep monitor.apps.py | grep -v grep | awk '{print $2}' | xargs kill && sleep 5")
     
 @parallel(pool_size=2)
 def test():
