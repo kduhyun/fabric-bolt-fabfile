@@ -6,6 +6,7 @@ directory=/svc/owltree
 [program:monitor]
 command=/usr/bin/python /svc/monitor/monitor.apps.py
 directory=/svc/monitor
+autorestart=true
 
 [supervisord]
 logfile = /tmp/supervisord.log
