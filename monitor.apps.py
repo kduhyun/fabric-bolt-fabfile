@@ -17,7 +17,7 @@ print(key['receiverfcm'])
 f.close()
 
 host="http://localhost:8080/util/serverlist"
-hostname="[KR1]"+socket.gethostname()
+hostname=socket.gethostname()
 lastErrorTs=0
 DURATION_MS=3000
 
