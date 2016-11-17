@@ -3,6 +3,10 @@ command=/svc/java/bin/java -javaagent:/svc/owltree/OwlTree-1.0.0.jar -Dfile.enco
 autorestart=true
 directory=/svc/owltree
 
+[program:monitor]
+command=/usr/bin/python /svc/monitor/monitor.apps.py
+directory=/svc/monitor
+
 [supervisord]
 logfile = /tmp/supervisord.log
 identifier = mysupervisor
