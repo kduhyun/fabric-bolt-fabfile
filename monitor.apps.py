@@ -19,7 +19,7 @@ f.close()
 host="http://localhost:8080/util/serverlist"
 hostname=socket.gethostname()
 lastErrorTs=0
-DURATION_MS=30000
+DURATION_MS=60000
 
 class GmailSender(Action):
     def __init__(self, MSG=None, TO=None):
