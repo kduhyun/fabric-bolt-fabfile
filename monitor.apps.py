@@ -19,7 +19,7 @@ f.close()
 host="http://localhost:8080/util/serverlist"
 hostname=socket.gethostname()
 lastErrorTs=0
-DURATION_MS=3000
+DURATION_MS=30000
 
 class GmailSender(Action):
     def __init__(self, MSG=None, TO=None):
@@ -106,7 +106,7 @@ Monitor(
                 # We monitor the 'http://localhost:8000' URL, which is where
                 # we expect the 'myservice' to be bound
                 GET=host,
-                freq=Time.ms(1000),
+                freq=Time.ms(5000),
                 fail=[
                     Incident(
                         # If we have 5 errors during 5 seconds...
