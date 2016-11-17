@@ -106,7 +106,7 @@ Monitor(
                 # We monitor the 'http://localhost:8000' URL, which is where
                 # we expect the 'myservice' to be bound
                 GET=host,
-                freq=Time.ms(5000),
+                freq=Time.ms(DURATION_MS/5),
                 fail=[
                     Incident(
                         # If we have 5 errors during 5 seconds...
