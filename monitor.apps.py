@@ -22,7 +22,7 @@ lastErrorTs=0
 DURATION_MS=60000
 
 class GmailSender(Action):
-    def __init__(self, MSG=None, TO=None):
+    def __init__(self, MSG=None, TO=None, TYPE=None):
         Action.__init__(self)
         
         self.msg = MIMEText(MSG) 
@@ -30,12 +30,14 @@ class GmailSender(Action):
         self.msg['From'] = key['emailaddress']
         self.msg['To'] = TO
         self.password=key['emailpw']
+        self.type = TYPE
         
-        GmailSender.lastErrorTs=0
+        GmailSender.lastTs={}
+        GmailSender.lastTs[self.type]=0
         
     def run(self, monitor, service, rule, runner):
-        diff=rule.lastRun - FCMSender.lastErrorTs
-        GmailSender.lastErrorTs = rule.lastRun        
+        diff=rule.lastRun - GmailSender.lastTs[self.type]
+        GmailSender.lastTs[self.type] = rule.lastRun        
         
         if(diff < DURATION_MS*2):
             return True
@@ -50,7 +52,7 @@ class GmailSender(Action):
         return True
 
 class FCMSender(Action):
-    def __init__(self, MSG=None, TO=None):
+    def __init__(self, MSG=None, TO=None, TYPE=None):
         Action.__init__(self)
         
         url = "http://fcm.googleapis.com/fcm/send"
@@ -76,12 +78,14 @@ class FCMSender(Action):
             "Authorization":"key="+self.fcmkey}
         self.method = "POST"
         self.timeout = 10
-        FCMSender.lastErrorTs=0
+        self.type = TYPE
+        FCMSender.lastTs={}
+        FCMSender.lastTs[self.type]=0
 
     def run(self, monitor, service, rule, runner):
     
-        diff=rule.lastRun - FCMSender.lastErrorTs
-        FCMSender.lastErrorTs = rule.lastRun
+        diff=rule.lastRun - FCMSender.lastTs[self.type]
+        FCMSender.lastTs[self.type] = rule.lastRun
         
         if(diff < DURATION_MS*2):
             return True
@@ -119,8 +123,24 @@ Monitor(
                             # NOTE: Restart will make the process a child of the monitoring, so
                             # you might prefer to use something like upstart
                             Print("error!"),
-                            GmailSender(MSG="[ERR] "+datetime.datetime.now().strftime("%H:%M:%S.%f")+","+hostname+" Timeout.", TO=key['receiveraddress']),
-                            FCMSender(MSG="[ERR] "+datetime.datetime.now().strftime("%H:%M:%S.%f")+","+hostname+" Timeout.", TO=key['receiverfcm'])
+                            GmailSender(MSG="[FAIL] "+datetime.datetime.now().strftime("%H:%M:%S.%f")+","+hostname+" Timeout.", TO=key['receiveraddress'], TYPE="fail"),
+                            FCMSender(MSG="[FAIL] "+datetime.datetime.now().strftime("%H:%M:%S.%f")+","+hostname+" Timeout.", TO=key['receiverfcm'], TYPE="fail")
+                        ]
+                    )
+                ],
+                success=[
+                    Incident(
+                        # If we have 5 errors during 5 seconds...
+                        errors=0,
+                        during=Time.ms(DURATION_MS),
+                        actions=[
+                            # We kill the 'myservice-start.py' script if it exists
+                            # and (re)start it, so that the 'http://localhost:8000' will
+                            # become available
+                            # NOTE: Restart will make the process a child of the monitoring, so
+                            # you might prefer to use something like upstart
+                            GmailSender(MSG="[O  K] "+datetime.datetime.now().strftime("%H:%M:%S.%f")+","+hostname+" Timeout.", TO=key['receiveraddress'], TYPE="success"),
+                            FCMSender(MSG="[O  K] "+datetime.datetime.now().strftime("%H:%M:%S.%f")+","+hostname+" Timeout.", TO=key['receiverfcm'], TYPE="success")
                         ]
                     )
                 ]
