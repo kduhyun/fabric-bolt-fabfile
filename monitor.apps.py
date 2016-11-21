@@ -30,14 +30,12 @@ class GmailSender(Action):
         self.msg['From'] = key['emailaddress']
         self.msg['To'] = TO
         self.password=key['emailpw']
-        self.type = TYPE
-        
-        GmailSender.lastTs={}
-        GmailSender.lastTs[self.type]=0
+        self.type = TYPE        
+        self.lastTs=0
         
     def run(self, monitor, service, rule, runner):
-        diff=rule.lastRun - GmailSender.lastTs[self.type]
-        GmailSender.lastTs[self.type] = rule.lastRun        
+        diff=rule.lastRun - self.lastTs
+        self.lastTs = rule.lastRun        
         
         if(diff < DURATION_MS*2):
             return True
@@ -79,13 +77,12 @@ class FCMSender(Action):
         self.method = "POST"
         self.timeout = 10
         self.type = TYPE
-        FCMSender.lastTs={}
-        FCMSender.lastTs[self.type]=0
+        self.lastTs=0
 
     def run(self, monitor, service, rule, runner):
     
-        diff=rule.lastRun - FCMSender.lastTs[self.type]
-        FCMSender.lastTs[self.type] = rule.lastRun
+        diff=rule.lastRun - self.lastTs
+        self.lastTs = rule.lastRun
         
         if(diff < DURATION_MS*2):
             return True
@@ -123,8 +120,8 @@ Monitor(
                             # NOTE: Restart will make the process a child of the monitoring, so
                             # you might prefer to use something like upstart
                             Print("error!"),
-                            GmailSender(MSG="[FAIL] "+datetime.datetime.now().strftime("%H:%M:%S.%f")+","+hostname+" Timeout.", TO=key['receiveraddress'], TYPE="fail"),
-                            FCMSender(MSG="[FAIL] "+datetime.datetime.now().strftime("%H:%M:%S.%f")+","+hostname+" Timeout.", TO=key['receiverfcm'], TYPE="fail")
+                            GmailSender(MSG="[FAIL] "+datetime.datetime.now().strftime("%H:%M:%S.%f")+","+hostname+" Timeout.", TO=key['receiveraddress'], TYPE='fail'),
+                            FCMSender(MSG="[FAIL] "+datetime.datetime.now().strftime("%H:%M:%S.%f")+","+hostname+" Timeout.", TO=key['receiverfcm'], TYPE='fail')
                         ]
                     )
                 ],
@@ -139,8 +136,8 @@ Monitor(
                             # become available
                             # NOTE: Restart will make the process a child of the monitoring, so
                             # you might prefer to use something like upstart
-                            GmailSender(MSG="[O  K] "+datetime.datetime.now().strftime("%H:%M:%S.%f")+","+hostname+" Timeout.", TO=key['receiveraddress'], TYPE="success"),
-                            FCMSender(MSG="[O  K] "+datetime.datetime.now().strftime("%H:%M:%S.%f")+","+hostname+" Timeout.", TO=key['receiverfcm'], TYPE="success")
+                            GmailSender(MSG="[O  K] "+datetime.datetime.now().strftime("%H:%M:%S.%f")+","+hostname+" Timeout.", TO=key['receiveraddress'], TYPE='success'),
+                            FCMSender(MSG="[O  K] "+datetime.datetime.now().strftime("%H:%M:%S.%f")+","+hostname+" Timeout.", TO=key['receiverfcm'], TYPE='success')
                         ]
                     )
                 ]
