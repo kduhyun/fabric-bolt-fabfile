@@ -5,16 +5,17 @@ env.key_filename=['/home/ec2-user/.ssh/owltree.pem', '/home/ec2-user/.ssh/choco.
 env.warn_only=True
 
 def build():
-    run("cd /svc/git/owltreeserver && git pull")
-    errorLog=run("cd /svc/git/owltreeserver && git checkout develop && git pull && ./mvnw install -Dmaven.test.skip=false | grep ERROR")
-    if errorLog:
-        print(errorLog)
-    else:
-        run("rm -f /svc/git/owltreeserver/target/OwlTree-1.0.0.zip && zip -9 -j /svc/git/owltreeserver/target/OwlTree-1.0.0.zip /svc/git/owltreeserver/target/OwlTree-1.0.0.jar && s3cmd put --force /svc/git/owltreeserver/target/OwlTree-1.0.0.zip s3://owltree/")
-        sudo("rm -f /svc/shell/setup.haproxy.sh")
-        sudo("wget --no-cache --no-check-certificate https://raw.githubusercontent.com/kduhyun/fabric-bolt-fabfile/master/master/setup.haproxy.sh -O /svc/shell/setup.haproxy.sh")
-        sudo("sh /svc/shell/setup.haproxy.sh")
-    
+    with settings(warn_only=False):
+        run("cd /svc/git/owltreeserver && git pull")
+        mavenResult=run("cd /svc/git/owltreeserver && git checkout develop && git pull && ./mvnw install -Dmaven.test.skip=false")
+        print("mavenResult: " + mavenResult)
+        print("mavenResult: " + mavenResult.return_code)
+        if mavenResult.return_code > 0:
+            run("rm -f /svc/git/owltreeserver/target/OwlTree-1.0.0.zip && zip -9 -j /svc/git/owltreeserver/target/OwlTree-1.0.0.zip /svc/git/owltreeserver/target/OwlTree-1.0.0.jar && s3cmd put --force /svc/git/owltreeserver/target/OwlTree-1.0.0.zip s3://owltree/")
+            sudo("rm -f /svc/shell/setup.haproxy.sh")
+            sudo("wget --no-cache --no-check-certificate https://raw.githubusercontent.com/kduhyun/fabric-bolt-fabfile/master/master/setup.haproxy.sh -O /svc/shell/setup.haproxy.sh")
+            sudo("sh /svc/shell/setup.haproxy.sh")
+
 def processDeploying():    
     with settings(warn_only=True):
         run("s3cmd get --force s3://owltree/OwlTree-1.0.0.zip /svc/owltree/ && cd /svc/owltree/ && unzip -o ./OwlTree-1.0.0.zip")
