@@ -8,8 +8,8 @@ def build():
     with settings(warn_only=False):
         run("cd /svc/git/owltreeserver && git pull")
         mavenResult=run("cd /svc/git/owltreeserver && git checkout develop && git pull && ./mvnw install -Dmaven.test.skip=false")
-        print("mavenResult: " + mavenResult)
-        print("mavenResult: " + mavenResult.return_code)
+        #print("mavenResult: " + mavenResult)
+        print("mavenResult: " + str(mavenResult.return_code))
         if mavenResult.return_code > 0:
             run("rm -f /svc/git/owltreeserver/target/OwlTree-1.0.0.zip && zip -9 -j /svc/git/owltreeserver/target/OwlTree-1.0.0.zip /svc/git/owltreeserver/target/OwlTree-1.0.0.jar && s3cmd put --force /svc/git/owltreeserver/target/OwlTree-1.0.0.zip s3://owltree/")
             sudo("rm -f /svc/shell/setup.haproxy.sh")
