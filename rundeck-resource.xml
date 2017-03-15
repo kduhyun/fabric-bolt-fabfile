@@ -1,0 +1,5 @@
+<project>
+    <node name="owlapp1" type="Node"
+    hostname="ec2-54-82-254-14.compute-1.amazonaws.com"
+    username="ec2-user"/>
+</project>
